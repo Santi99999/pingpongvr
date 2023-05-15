@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Experiencia en VR: Océano con animales marinos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v6.1.0/dist/aframe-extras.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <a-assets>
+        <a-asset-item id="shark" src="https://cdn.glitch.com/98c24d6b-9ef9-4305-b02c-f8daae7837ac%2Fshark.glb?v=1624886652481"></a-asset-item>
+        <a-asset-item id="dolphin" src="https://cdn.glitch.com/98c24d6b-9ef9-4305-b02c-f8daae7837ac%2Fdolphin.glb?v=1624886631666"></a-asset-item>
+        <a-asset-item id="turtle" src="https://cdn.glitch.com/98c24d6b-9ef9-4305-b02c-f8daae7837ac%2Fturtle.glb?v=1624886665543"></a-asset-item>
+      </a-assets>
+
+      <a-entity id="camera" position="0 1.6 0">
+        <a-entity id="cursor" cursor="fuse: true; fuseTimeout: 1000" raycaster="objects: .clickable"></a-entity>
+      </a-entity>
+
+      <a-entity id="ocean" ocean="width: 50; depth: 50; density: 100" rotation="-90 0 0"></a-entity>
+
+      <a-entity id="shark" gltf-model="#shark" scale="0.5 0.5 0.5" position="-5 0 -10" class="clickable"
+                event-set__mouseenter="scale: 0.6 0.6 0.6; gui-text.value: Tiburón; gui-bg.material.opacity: 0.7"
+                event-set__mouseleave="scale: 0.5 0.5 0.5; gui-text.value: ">
+      </a-entity>
+
+      <a-entity id="dolphin" gltf-model="#dolphin" scale="0.2 0.2 0.2" position="0 0 -10" class="clickable"
+                event-set__mouseenter="scale: 0.3 0.3 0.3; gui-text.value: Delfín; gui-bg.material.opacity: 0.7"
+                event-set__mouseleave="scale: 0.2 0.2 0.2; gui-text.value: ">
+      </a-entity>
+
+      <a-entity id="turtle" gltf-model="#turtle" scale="0.1 0.1 0.1" position="5 0 -10" class="clickable"
+                event-set__mouseenter="scale: 0.2 0.2 0.2; gui-text.value: Tortuga; gui-bg.material.opacity: 0
+  </a-entity>
+
+  <a-entity id="gui" position="0 0 -1">
+    <a-entity id="gui-bg" geometry="primitive: plane; width: auto; height: auto" material="color: #333; opacity: 0"
+              scale="2 2 2"></a-entity>
+    <a-entity id="gui-text" text="value: ; color: white; align: center; wrapCount: 20" position="0 0 0.1"></a-entity>
+  </a-entity>
+
+  <a-entity light="type: ambient; color: #BBB"></a-entity>
+  <a-entity light="type: directional; intensity: 0.5; color: #FFF" position="-1 1 0"></a-entity>
+  <a-entity light="type: directional; intensity: 0.5; color: #FFF" position="1 1 0"></a-entity>
+</a-scene>
+  </body>
+</html>
