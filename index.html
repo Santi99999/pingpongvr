@@ -1,91 +1,75 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Ping Pong Game</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   </head>
   <body>
-    <a-scene cursor="rayOrigin: mouse">
-      <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
+    <a-scene>
+      <!-- Configuración del juego -->
+      <a-assets>
+        <a-asset-item id="paddle-model" src="https://cdn.glitch.com/0e4e34d1-ae29-4fa2-9436-62a7920512e7%2Fpaddle.glb?v=1606129059492"></a-asset-item>
+        <a-asset-item id="ball-model" src="https://cdn.glitch.com/0e4e34d1-ae29-4fa2-9436-62a7920512e7%2Fball.glb?v=1606129065070"></a-asset-item>
+      </a-assets>
 
-      <a-entity environment="preset: default"></a-entity>
+      <!-- Cámara y controles -->
+      <a-entity camera look-controls cursor="rayOrigin: mouse"></a-entity>
 
-      <a-entity id="blocks"></a-entity>
+      <!-- Paddle del jugador -->
+      <a-entity id="player" gltf-model="#paddle-model" position="0 0 -4" scale="0.3 0.3 0.3" static-body></a-entity>
 
-      <a-entity id="teleport-cursor" cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 500"
-        position="0 0 -2"
-        geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-        material="color: black; shader: flat">
-      </a-entity>
+      <!-- Paddle de la IA -->
+      <a-entity id="ai" gltf-model="#paddle-model" position="0 0 4" scale="0.3 0.3 0.3" static-body></a-entity>
 
-      <a-entity id="teleport-raycaster" raycaster="objects: .teleport-target"
-        line="color: red; opacity: 0.5; lineWidth: 6">
-      </a-entity>
+      <!-- Pelota -->
+      <a-entity id="ball" gltf-model="#ball-model" position="0 0 0" scale="0.05 0.05 0.05" dynamic-body></a-entity>
+
+      <!-- Marcador -->
+      <a-entity id="score" position="0 3 -4" text="value: Score: 0; color: white; align: center"></a-entity>
+
+      <!-- Sistema de físicas -->
+      <a-entity physics-collider="colliderEvent: collisions"></a-entity>
     </a-scene>
 
     <script>
-      AFRAME.registerComponent('teleport', {
+      // Variables de juego
+      var ball = document.querySelector("#ball");
+      var player = document.querySelector("#player");
+      var ai = document.querySelector("#ai");
+      var scoreText = document.querySelector("#score");
+      var score = 0;
+
+      // Movimiento del jugador con el cursor
+      player.addEventListener("collide", function (event) {
+        if (event.detail.body.el === ball) {
+          score++;
+          scoreText.setAttribute("text", "value: Score: " + score + "; color: white; align: center");
+        }
+      });
+
+      // Movimiento de la IA
+      ai.addEventListener("collide", function (event) {
+        if (event.detail.body.el === ball) {
+          // Cambia la dirección de la pelota al golpearla
+          var direction = Math.random() > 0.5 ? 1 : -1;
+          ball.body.applyImpulse(new CANNON.Vec3(direction, 0, 0), new CANNON.Vec3().copy(ball.getAttribute("position")));
+        }
+      });
+
+      // Configuración del juego
+      AFRAME.registerComponent("setup", {
         init: function () {
-          var el = this.el;
-
-          el.addEventListener('raycaster-intersection', function (evt) {
-            var intersection = evt.detail.intersections[0];
-            var cursor = document.querySelector('#teleport-cursor');
-            cursor.setAttribute('position', intersection.point);
-          });
-
-          el.addEventListener('raycaster-intersection-cleared', function (evt) {
-            var cursor = document.querySelector('#teleport-cursor');
-            cursor.setAttribute('position', '0 0 -2');
-          });
-
-          el.addEventListener('click', function () {
-            var cursor = document.querySelector('#teleport-cursor');
-            var camera = document.querySelector('#camera');
-            camera.setAttribute('position', cursor.getAttribute('position'));
+          var sceneEl = this.el;
+          sceneEl.addEventListener("loaded", function () {
+            // Inicia el juego con la pelota moviéndose hacia el jugador
+            ball.body.applyImpulse(new CANNON.Vec3(0, 0, -10), new CANNON.Vec3().copy(ball.getAttribute("position")));
           });
         }
       });
 
-      AFRAME.registerComponent('block-spawner', {
-        init: function () {
-          var el = this.el;
-
-          setInterval(function () {
-            var block = document.createElement('a-box');
-            block.setAttribute('position', getRandomPosition());
-            block.setAttribute('color', getRandomColor());
-            block.setAttribute('class', 'teleport-target');
-            block.setAttribute('scale', '0.5 0.5 0.5');
-            block.setAttribute('remove-on-click', '');
-            el.appendChild(block);
-          }, 10000);
-        }
-      });
-
-      AFRAME.registerComponent('remove-on-click', {
-        init: function () {
-          var el = this.el;
-          el.addEventListener('click', function () {
-            el.parentNode.removeChild(el);
-          });
-        }
-      });
-
-      function getRandomPosition() {
-        var x = Math.random() * 4 - 2;
-        var z = Math.random() * 4 - 2;
-        return x + ' 0.25 ' + z;
-      }
-
-      function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-      }
+      // Iniciar el juego
+      document.querySelector("a-scene").setAttribute("setup", "");
     </script>
   </body>
 </html>
