@@ -8,12 +8,12 @@
     <a-scene cursor="rayOrigin: mouse">
       <a-entity id="camera" camera look-controls position="0 1.6 0"></a-entity>
 
-      <a-entity environment="preset: chess"></a-entity>
+      <a-entity environment="preset: default"></a-entity>
 
       <a-entity id="blocks"></a-entity>
 
       <a-entity id="teleport-cursor" cursor="rayOrigin: mouse; fuse: true; fuseTimeout: 500"
-        position="0 0 -1"
+        position="0 0 -2"
         geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
         material="color: black; shader: flat">
       </a-entity>
@@ -36,7 +36,7 @@
 
           el.addEventListener('raycaster-intersection-cleared', function (evt) {
             var cursor = document.querySelector('#teleport-cursor');
-            cursor.setAttribute('position', '0 0 -1');
+            cursor.setAttribute('position', '0 0 -2');
           });
 
           el.addEventListener('click', function () {
